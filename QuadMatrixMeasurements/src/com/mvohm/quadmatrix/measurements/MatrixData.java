@@ -560,6 +560,49 @@ public class MatrixData {
     return findErrors(bigDecimalUnityMatrix, product).setTime(time);
   }
 
+  public ErrorSet multiplicationErrors() {
+    checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
+    setTestedMethodName("DoubleMatrix.inverse()");
+    final DoubleMatrix matrix = new DoubleMatrix(matrixData, true);
+    time = -System.nanoTime();
+    final double[][] product = matrix.multiply(matrixX).getDoubleData();
+    time += System.nanoTime();
+    return findErrors(matrixB, product).setTime(time);
+  }
+
+  public ErrorSet quadrupleMultiplicationErrors() {
+    checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
+    setTestedMethodName("DoubleMatrix.inverse()");
+    final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
+
+    quadrupleMatrixX = makeQuadrupleMatrixX();
+    final Quadruple[][] expectedProduct = multiply(matrix.getQuadrupleData(), quadrupleMatrixX);
+
+    time = -System.nanoTime();
+    final Quadruple[][] actualProduct = matrix.multiply(quadrupleMatrixX).getQuadrupleData();
+    time += System.nanoTime();
+
+    return findErrors(expectedProduct, actualProduct).setTime(time);
+  }
+
+  public ErrorSet bigDecimalMultiplicationErrors() {
+    checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
+    setTestedMethodName("DoubleMatrix.inverse()");
+    final BigDecimalMatrix matrix = new BigDecimalMatrix(convertToQuadruples(matrixData), true);
+
+    // If it were converted from doubles directly, the precision would be too low
+    bigDecimalMatrixX = convertToBigDecimals(convertToQuadruples(matrixX));
+    final BigDecimal[][] expectedProduct = multiply(matrix.getBigDecimalData(), bigDecimalMatrixX);
+
+    time = -System.nanoTime();
+    final BigDecimal[][] actualProduct = matrix.multiply(bigDecimalMatrixX).getBigDecimalData();
+    time += System.nanoTime();
+
+    return findErrors(expectedProduct, actualProduct).setTime(time);
+  }
+
+
+
   /* *************************************************************************
   ******** Private methods ***************************************************
   ***************************************************************************/
@@ -591,10 +634,10 @@ public class MatrixData {
 
   protected static String performerMethodName() {
     final String s = new Exception().getStackTrace()[1].toString();
-    return s.replaceFirst("\\(.*\\)", "():").replaceFirst(".*\\.", "");
+    return s.replaceFirst("\\(.*\\)", "()").replaceFirst(".*\\.", "");
   }
 
-  protected void checkPurpose(Object methodName, Purpose impliedPurpose) {
+  protected void checkPurpose(String methodName, Purpose impliedPurpose) {
     if (this.purpose != impliedPurpose) {
       throw new IllegalArgumentException(String.format(
                   "Calling %s on MatrixData implies %s, while this instance was creted for %s",
