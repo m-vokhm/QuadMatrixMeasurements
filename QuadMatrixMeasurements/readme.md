@@ -1,0 +1,1 @@
+A simple utility to measure basic features of QuadMatrix
