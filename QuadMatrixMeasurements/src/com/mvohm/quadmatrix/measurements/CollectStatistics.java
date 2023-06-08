@@ -299,13 +299,13 @@ public class CollectStatistics {
   }
 
   private static void showProgress(final OperationTester tester, int i) {
-    say("        %4d: Max error: %7.3e, MSE: %7.3e, time: %,9.3f ms",
+    say("      %,6d: Max error: %7.3e, MSE: %7.3e, time: %,11.3f ms",
         i, tester.getLastMaxError(), tester.getLastMse(), tester.getLastTimeMs());
   }
 
   private static void showResults(ErrorSet result) {
     say("========================");
-    say("     Average: Max error: %7.3e, MSE: %7.3e, time: %,9.3f ms\n",
+    say("     Average: Max error: %7.3e, MSE: %7.3e, time: %,11.3f ms\n",
         result.maxError(), result.mse(), result.getTime() * 1e-6);
   }
 

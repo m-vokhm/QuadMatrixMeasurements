@@ -316,7 +316,7 @@ public class MatrixData {
     setTestedMethodName("QuadrupleMatrix.solveAccurately(Quadruple[])");
     final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
     if (quadrupleSolution == null) {
-      throw new RuntimeException("quadrupleLuSolutionWithScalingErrors() must be called before quadrupleAccurateLUSolutionWithScalingErrors()");
+      quadrupleSolution = makeQuadrupleSolution();
     }
     time = -System.nanoTime();
     matrix.solveAccurately(quadrupleVector);
@@ -331,7 +331,7 @@ public class MatrixData {
     setTestedMethodName("BigDecimalMatrix.solveAccurately(BigDecimal[])");
     final BigDecimalMatrix matrix = new BigDecimalMatrix(matrixData, true);
     if (bigDecimalSolution == null) {
-      throw new RuntimeException("bigDecimalLuSolutionWithScalingErrors() must be called before bigDecimalAccurateLUSolutionWithScalingErrors()");
+      bigDecimalSolution = makeBigDecimalSolution();
     }
     time = -System.nanoTime();
     matrix.solveAccurately(bigDecimalVector);
@@ -414,7 +414,7 @@ public class MatrixData {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
     if (quadrupleSolution == null) {
-      throw new RuntimeException("quadrupleSPDSolutionErrors() must be called before quadrupleAccurateSPDSolutionErrors()");
+      quadrupleSolution = makeQuadrupleSolution();
     }
     setTestedMethodName("QuadrupleMatrix.solveSPDAccurately(Quadruple[])");
     final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
@@ -429,7 +429,7 @@ public class MatrixData {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
     if (bigDecimalSolution == null) {
-      throw new RuntimeException("bifDecimaSPDSolutionErrors() must be called before bigDecimalAccurateSPDSolutionErrors()");
+      bigDecimalSolution = makeBigDecimalSolution();
     }
     setTestedMethodName("BigDecimalMatrix.solveSPDAccurately(BigDecimal[])");
     final BigDecimalMatrix matrix = new BigDecimalMatrix(matrixData, true);
@@ -512,11 +512,12 @@ public class MatrixData {
   public ErrorSet quadrupleAccurateMatrixSolutionErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
-    if (quadrupleMatrixX == null) {
-      throw new RuntimeException("quadrupleMmatrixSolutionErrors() must be called before quadrupleAccurateMatrixSolutionErrors()");
-    }
     setTestedMethodName("QuadrupleMatrix.solveAccurately(Quadruple[][])");
     final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
+    if (quadrupleMatrixX == null) {
+      quadrupleMatrixX = makeQuadrupleMatrixX();
+      quadrupleMatrixB = multiply(matrix.getQuadrupleData(), quadrupleMatrixX);
+    }
     time = -System.nanoTime();
     final Quadruple[][] actualSolution = matrix.solveAccurately(quadrupleMatrixB).getQuadrupleData();
     time += System.nanoTime();
@@ -526,11 +527,12 @@ public class MatrixData {
   public ErrorSet bigDecimalAccurateMatrixSolutionErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
-    if (bigDecimalMatrixX == null) {
-      throw new RuntimeException("bigDecimalMmatrixSolutionErrors() must be called before bigDecimalAccurateMatrixSolutionErrors()");
-    }
     setTestedMethodName("BigDecimalMatrix.solveAccurately(BigDecimal[][])");
     final BigDecimalMatrix matrix = new BigDecimalMatrix(matrixData, true);
+    if (bigDecimalMatrixX == null) {
+      bigDecimalMatrixX = makeBigDecimalMatrixX();
+      bigDecimalMatrixB = multiply(matrix.getBigDecimalData(), bigDecimalMatrixX);
+    }
     time = -System.nanoTime();
     final BigDecimal[][] actualSolution = matrix.solveAccurately(bigDecimalMatrixB).getBigDecimalData();
     time += System.nanoTime();
@@ -607,7 +609,7 @@ public class MatrixData {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.INVERSION);
     if (quadrupleUnityMatrix == null) {
-      throw new RuntimeException("quadrupleMatrixInversionErrors() must be called before quadrupleAccurateMatrixInversionErrors()");
+      quadrupleUnityMatrix = convertToQuadruples(unityMatrix);
     }
     setTestedMethodName("QuadrupleMatrix.inverseAccurately()");
     final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
