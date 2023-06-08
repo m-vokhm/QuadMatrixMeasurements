@@ -44,8 +44,6 @@ public class CollectStatistics {
     ErrorSet perform(MatrixData matrixData);
   }
 
-
-
   enum Operations {
     SIMPLE_VECTOR_SOLUTION,
     ACCURATE_VECTOR_SOLUTION,
@@ -69,15 +67,15 @@ public class CollectStatistics {
   int [] sizes = new int[] {
      50,
     100,
-//    200,
-//    400,
+    200,
+    400,
   };
 
   static final long WARMUP_TIME =   3_000; // Start timing after warmup of 3 seconds after the start of the execution
   static final int WARMUP_COUNT =   1_000; // Start timing after warmup of 1000 test iterations, if they take less than 3 a
-  static final int ITERATIONS =    10_000; // For fast methods, do at least 10,000 iterations
-  static final int MIN_ITERATIONS =    10; // Do at least 10 iterations
-  static final long MAXTIME_MS =   20_000; // max 20 seconds per every type + operation;
+  static final int ITERATIONS =   100_000; // For fast methods, do max 100,000 iterations
+  static final int MIN_ITERATIONS =    20; // Do at least 20 iterations
+  static final long MAXTIME_MS =   30_000; // max 20 seconds per every type + operation;
 
   interface TesterMaker {
     OperationTester make(int size);
@@ -92,70 +90,79 @@ public class CollectStatistics {
    */
   HashMap<Operations, GeneratorMaker> generatorMakers = new HashMap<>()
   {{
-    put(Operations.SIMPLE_VECTOR_SOLUTION, size -> () -> MatrixData.makeDataSetForVectorSolutions(size, random));
-    put(Operations.MULTIPLICATION, size -> () -> MatrixData.makeDataSetForMatrixSolutions(size, random));
+    put(Operations.SIMPLE_VECTOR_SOLUTION,    size -> () -> MatrixData.makeDataSetForVectorSolutions(size, random));
+    put(Operations.ACCURATE_VECTOR_SOLUTION,  size -> () -> MatrixData.makeDataSetForVectorSolutions(size, random));
+    put(Operations.SIMPLE_SPD_SOLUTION,       size -> () -> MatrixData.makeDataSetForSPDSolutions(size, random));
+    put(Operations.ACCURATE_SPD_SOLUTION,     size -> () -> MatrixData.makeDataSetForSPDSolutions(size, random));
+    put(Operations.SIMPLE_MATRIX_SOLUTION,    size -> () -> MatrixData.makeDataSetForMatrixSolutions(size, random));
+    put(Operations.ACCURATE_MATRIX_SOLUTION,  size -> () -> MatrixData.makeDataSetForMatrixSolutions(size, random));
+    put(Operations.SIMPLE_INVERSION,          size -> () -> MatrixData.makeDataSetForInversions(size, random));
+    put(Operations.ACCURATE_INVERSION,        size -> () -> MatrixData.makeDataSetForInversions(size, random));
+    put(Operations.MULTIPLICATION,            size -> () -> MatrixData.makeDataSetForMatrixSolutions(size, random));
   }};
 
   /**
    * For each operation type and matrix type, stores the corresponding method performing the operation to be tested
    */
   HashMap<Operations, HashMap<MatrixTypes, OperationPerformer>> performers = new HashMap<>() {{
-//    put(Operations.SIMPLE_VECTOR_SOLUTION, new HashMap<>() {{
-//      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::luSolutionWithScalingErrors);
-//      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleLuSolutionWithScalingErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalLuSolutionWithScalingErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalLuSolutionWithScalingErrors);
-//    }});
-//    put(Operations.ACCURATE_VECTOR_SOLUTION, new HashMap<>() {{
-//      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::accurateLUSolutionWithScalingErrors);
-//      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleAccurateLUSolutionWithScalingErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalAccurateLUSolutionWithScalingErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateLUSolutionWithScalingErrors);
-//    }});
-//    put(Operations.SIMPLE_SPD_SOLUTION, new HashMap<>() {{
-//      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::spdSolutionErrors);
-//      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleSPDSolutionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalSPDSolutionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalSPDSolutionErrors);
-//    }});
-//    put(Operations.ACCURATE_SPD_SOLUTION, new HashMap<>() {{
-//      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::accurateSPDSolutionErrors);
-//      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleAccurateSPDSolutionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalAccurateSPDSolutionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateSPDSolutionErrors);
-//    }});
-//    put(Operations.SIMPLE_MATRIX_SOLUTION, new HashMap<>() {{
-//      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::matrixSolutionErrors);
-//      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleMatrixSolutionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalMatrixSolutionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalMatrixSolutionErrors);
-//    }});
-//    put(Operations.ACCURATE_MATRIX_SOLUTION, new HashMap<>() {{
-//      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::accurateMatrixSolutionErrors);
-//      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleAccurateMatrixSolutionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalAccurateMatrixSolutionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateMatrixSolutionErrors);
-//    }});
-//    put(Operations.SIMPLE_INVERSION, new HashMap<>() {{
-//      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::matrixInversionErrors);
-//      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleMatrixInversionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalMatrixInversionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalMatrixInversionErrors);
-//    }});
-//    put(Operations.ACCURATE_INVERSION, new HashMap<>() {{
-//      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::accurateMatrixInversionErrors);
-//      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleAccurateMatrixInversionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalAccurateMatrixInversionErrors);
-//      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateMatrixInversionErrors);
-//    }});
+    put(Operations.SIMPLE_VECTOR_SOLUTION, new HashMap<>() {{
+      put(MatrixTypes.JAMA,                 MatrixData::jamaLuSolutionErrors);
+      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleLuSolutionWithScalingErrors);
+      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleLuSolutionWithScalingErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalLuSolutionWithScalingErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalLuSolutionWithScalingErrors);
+    }});
+    put(Operations.ACCURATE_VECTOR_SOLUTION, new HashMap<>() {{
+      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleAccurateLUSolutionWithScalingErrors);
+      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleAccurateLUSolutionWithScalingErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalAccurateLUSolutionWithScalingErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateLUSolutionWithScalingErrors);
+    }});
+    put(Operations.SIMPLE_SPD_SOLUTION, new HashMap<>() {{
+      put(MatrixTypes.JAMA,                 MatrixData::jamaSpdSolutionErrors);
+      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleSpdSolutionErrors);
+      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleSPDSolutionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalSPDSolutionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalSPDSolutionErrors);
+    }});
+    put(Operations.ACCURATE_SPD_SOLUTION, new HashMap<>() {{
+      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleAccurateSPDSolutionErrors);
+      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleAccurateSPDSolutionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalAccurateSPDSolutionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateSPDSolutionErrors);
+    }});
+    put(Operations.SIMPLE_MATRIX_SOLUTION, new HashMap<>() {{
+      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleMatrixSolutionErrors);
+      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleMatrixSolutionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalMatrixSolutionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalMatrixSolutionErrors);
+    }});
+    put(Operations.ACCURATE_MATRIX_SOLUTION, new HashMap<>() {{
+      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleAccurateMatrixSolutionErrors);
+      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleAccurateMatrixSolutionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalAccurateMatrixSolutionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateMatrixSolutionErrors);
+    }});
+    put(Operations.SIMPLE_INVERSION, new HashMap<>() {{
+      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleMatrixInversionErrors);
+      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleMatrixInversionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalMatrixInversionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalMatrixInversionErrors);
+    }});
+    put(Operations.ACCURATE_INVERSION, new HashMap<>() {{
+      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleAccurateMatrixInversionErrors);
+      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleAccurateMatrixInversionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalAccurateMatrixInversionErrors);
+      put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateMatrixInversionErrors);
+    }});
     put(Operations.MULTIPLICATION, new HashMap<>() {{
-//      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::multiplicationErrors);
-//      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleMultiplicationErrors);
+      put(MatrixTypes.JAMA,                 MatrixData::jamaMultiplicationErrors);
+      put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleMultiplicationErrors);
+      put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleMultiplicationErrors);
       put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalMultiplicationErrors);
       put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalMultiplicationErrors);
     }});
   }};
-
 
   private PrintStream output = null;
 

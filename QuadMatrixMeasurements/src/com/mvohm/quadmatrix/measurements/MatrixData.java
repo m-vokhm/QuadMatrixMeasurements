@@ -18,6 +18,9 @@
 
 package com.mvohm.quadmatrix.measurements;
 
+import static com.mvohm.quadmatrix.measurements.AuxMethods.*;
+import static com.mvohm.quadmatrix.measurements.MatrixDataGenerators.*;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -28,10 +31,10 @@ import com.mvohm.quadmatrix.DoubleMatrix;
 import com.mvohm.quadmatrix.Matrix;
 import com.mvohm.quadmatrix.QuadrupleMatrix;
 import com.mvohm.quadmatrix.measurements.AuxMethods.ErrorSet;
+
 import com.mvohm.quadruple.Quadruple;
 
-import static com.mvohm.quadmatrix.measurements.AuxMethods.*;
-import static com.mvohm.quadmatrix.measurements.MatrixDataGenerators.*;
+import Jama.CholeskyDecomposition;
 
 /**
  * A helper class to generate random matrix data and examine accuracy of the solutions of the corresponding matrix
@@ -197,89 +200,9 @@ public class MatrixData {
    ****** Perform operations and return errors ******************************
    **************************************************************************/
 
-  public ErrorSet spdSolutionErrors() {
-    // printMethodName();
-    setTestedMethodName("DoubleMatrix.solveSPD(double[])");
-    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
-    final DoubleMatrix matrix = new DoubleMatrix(matrixData);
-    time = -System.nanoTime();
-    matrix.solveSPD(vector);
-    time += System.nanoTime();
-    final double[] actualSolution = matrix.getDoubleSolution();
-    return findErrors(this.solution, actualSolution).setTime(time);
-  }
+  // LU-decomposition-based simple vector solutions
 
-  public ErrorSet quadrupleSPDSolutionErrors() {
-    // printMethodName();
-    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
-    setTestedMethodName("QuadrupleMatrix.solveSPD(Quadruple[])");
-    final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
-    quadrupleSolution = makeQuadrupleSolution();
-    quadrupleVector = multiply(matrix.getQuadrupleData(), quadrupleSolution);
-    time = -System.nanoTime();
-    matrix.solveSPD(quadrupleVector);
-    time += System.nanoTime();
-    final Quadruple[] actualSolution = matrix.getQuadrupleSolution();
-    return findErrors(quadrupleSolution, actualSolution, false).setTime(time);
-  }
-
-  public ErrorSet bigDecimalSPDSolutionErrors() {
-    // printMethodName();
-    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
-    setTestedMethodName("BigDecimalMatrix.solveSPD(BigDecimal[])");
-    final BigDecimalMatrix matrix = new BigDecimalMatrix(matrixData, true);
-    bigDecimalSolution = makeBigDecimalSolution();
-    bigDecimalVector = multiply(matrix.getBigDecimalData(), bigDecimalSolution);
-    time = -System.nanoTime();
-    matrix.solveSPD(bigDecimalVector);
-    time += System.nanoTime();
-    final BigDecimal[] actualSolution = matrix.getBigDecimalSolution();
-    return findErrors(bigDecimalSolution, actualSolution).setTime(time);
-  }
-
-  public ErrorSet accurateSPDSolutionErrors() {
-    // printMethodName();
-    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
-    setTestedMethodName("DoubleMatrix.solveSPDAccurately(double[])");
-    final DoubleMatrix matrix = new DoubleMatrix(matrixData);
-    time = -System.nanoTime();
-    matrix.solveSPDAccurately(vector);
-    time += System.nanoTime();
-    final double[] actualSolution = matrix.getDoubleSolution();
-    return findErrors(this.solution, actualSolution).setTime(time);
-  }
-
-  public ErrorSet quadrupleAccurateSPDSolutionErrors() {
-    // printMethodName();
-    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
-    if (quadrupleSolution == null) {
-      throw new RuntimeException("quadrupleSPDSolutionErrors() must be called before quadrupleAccurateSPDSolutionErrors()");
-    }
-    setTestedMethodName("QuadrupleMatrix.solveSPDAccurately(Quadruple[])");
-    final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
-    time = -System.nanoTime();
-    matrix.solveSPDAccurately(quadrupleVector);
-    time += System.nanoTime();
-    final Quadruple[] actualSolution = matrix.getQuadrupleSolution();
-    return findErrors(quadrupleSolution, actualSolution).setTime(time);
-  }
-
-  public ErrorSet bigDecimalAccurateSPDSolutionErrors() {
-    // printMethodName();
-    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
-    if (bigDecimalSolution == null) {
-      throw new RuntimeException("bifDecimaSPDSolutionErrors() must be called before bigDecimalAccurateSPDSolutionErrors()");
-    }
-    setTestedMethodName("BigDecimalMatrix.solveSPDAccurately(BigDecimal[])");
-    final BigDecimalMatrix matrix = new BigDecimalMatrix(matrixData, true);
-    time = -System.nanoTime();
-    matrix.solveSPDAccurately(bigDecimalVector);
-    time += System.nanoTime();
-    final BigDecimal[] actualSolution = matrix.getBigDecimalSolution();
-    return findErrors(bigDecimalSolution, actualSolution).setTime(time);
-  }
-
-  public ErrorSet luSolutionWithScalingErrors() {
+  public ErrorSet doubleLuSolutionWithScalingErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
     setTestedMethodName("(scaled) DoubleMatrix.solve(double[])");
@@ -288,6 +211,19 @@ public class MatrixData {
     matrix.solve(vector);
     time += System.nanoTime();
     final double[] actualSolution = matrix.getDoubleSolution();
+    return findErrors(this.solution, actualSolution).setTime(time);
+  }
+
+  public ErrorSet jamaLuSolutionErrors() {
+    // printMethodName();
+    setTestedMethodName("Jama Matrix.solve(double[])");
+    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
+    final Jama.Matrix matrixA = new Jama.Matrix(matrixData);
+    final Jama.Matrix matrixB = new Jama.Matrix(vector, size);
+    time = -System.nanoTime();
+    final Jama.Matrix matrixX = matrixA.solve(matrixB);
+    time += System.nanoTime();
+    final double[] actualSolution = matrixX.getColumnPackedCopy();
     return findErrors(this.solution, actualSolution).setTime(time);
   }
 
@@ -319,7 +255,8 @@ public class MatrixData {
     return findErrors(bigDecimalSolution, actualSolution, false).setTime(time);
   }
 
-  public ErrorSet luSolutionWithoutScalingErrors() {
+
+  public ErrorSet doubleLuSolutionWithoutScalingErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
     setTestedMethodName("(unscaled) DoubleMatrix.solve(double[])");
@@ -359,7 +296,9 @@ public class MatrixData {
     return findErrors(bigDecimalSolution, actualSolution, false).setTime(time);
   }
 
-  public ErrorSet accurateLUSolutionWithScalingErrors() {
+  // Cholesky-decomposition-based accurate vector solutions
+
+  public ErrorSet doubleAccurateLUSolutionWithScalingErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
     setTestedMethodName("DoubleMatrix.solveAccurately(double[])");
@@ -401,7 +340,109 @@ public class MatrixData {
     return findErrors(bigDecimalSolution, actualSolution, false).setTime(time);
   }
 
-  public ErrorSet matrixSolutionErrors() {
+  // Cholesky-decomposition-based simple vector solutions
+
+  public ErrorSet doubleSpdSolutionErrors() {
+    // printMethodName();
+    setTestedMethodName("DoubleMatrix.solveSPD(double[])");
+    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
+    final DoubleMatrix matrix = new DoubleMatrix(matrixData);
+    time = -System.nanoTime();
+    matrix.solveSPD(vector);
+    time += System.nanoTime();
+    final double[] actualSolution = matrix.getDoubleSolution();
+    return findErrors(this.solution, actualSolution).setTime(time);
+  }
+
+  public ErrorSet jamaSpdSolutionErrors() {
+    // printMethodName();
+    setTestedMethodName("Jama Matrix.solveSPD(double[])");
+    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
+    final Jama.Matrix matrixA = new Jama.Matrix(matrixData);
+    final Jama.Matrix matrixB = new Jama.Matrix(vector, size);
+    time = -System.nanoTime();
+    final CholeskyDecomposition d = new CholeskyDecomposition(matrixA);
+    final Jama.Matrix matrixX = d.solve(matrixB);
+    time += System.nanoTime();
+    final double[] actualSolution = matrixX.getColumnPackedCopy();
+    return findErrors(this.solution, actualSolution).setTime(time);
+  }
+
+  public ErrorSet quadrupleSPDSolutionErrors() {
+    // printMethodName();
+    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
+    setTestedMethodName("QuadrupleMatrix.solveSPD(Quadruple[])");
+    final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
+    quadrupleSolution = makeQuadrupleSolution();
+    quadrupleVector = multiply(matrix.getQuadrupleData(), quadrupleSolution);
+    time = -System.nanoTime();
+    matrix.solveSPD(quadrupleVector);
+    time += System.nanoTime();
+    final Quadruple[] actualSolution = matrix.getQuadrupleSolution();
+    return findErrors(quadrupleSolution, actualSolution, false).setTime(time);
+  }
+
+  public ErrorSet bigDecimalSPDSolutionErrors() {
+    // printMethodName();
+    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
+    setTestedMethodName("BigDecimalMatrix.solveSPD(BigDecimal[])");
+    final BigDecimalMatrix matrix = new BigDecimalMatrix(matrixData, true);
+    bigDecimalSolution = makeBigDecimalSolution();
+    bigDecimalVector = multiply(matrix.getBigDecimalData(), bigDecimalSolution);
+    time = -System.nanoTime();
+    matrix.solveSPD(bigDecimalVector);
+    time += System.nanoTime();
+    final BigDecimal[] actualSolution = matrix.getBigDecimalSolution();
+    return findErrors(bigDecimalSolution, actualSolution).setTime(time);
+  }
+
+  // Cholesky-decomposition-based precise vector solutions
+
+  public ErrorSet doubleAccurateSPDSolutionErrors() {
+    // printMethodName();
+    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
+    setTestedMethodName("DoubleMatrix.solveSPDAccurately(double[])");
+    final DoubleMatrix matrix = new DoubleMatrix(matrixData);
+    time = -System.nanoTime();
+    matrix.solveSPDAccurately(vector);
+    time += System.nanoTime();
+    final double[] actualSolution = matrix.getDoubleSolution();
+    return findErrors(this.solution, actualSolution).setTime(time);
+  }
+
+  public ErrorSet quadrupleAccurateSPDSolutionErrors() {
+    // printMethodName();
+    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
+    if (quadrupleSolution == null) {
+      throw new RuntimeException("quadrupleSPDSolutionErrors() must be called before quadrupleAccurateSPDSolutionErrors()");
+    }
+    setTestedMethodName("QuadrupleMatrix.solveSPDAccurately(Quadruple[])");
+    final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
+    time = -System.nanoTime();
+    matrix.solveSPDAccurately(quadrupleVector);
+    time += System.nanoTime();
+    final Quadruple[] actualSolution = matrix.getQuadrupleSolution();
+    return findErrors(quadrupleSolution, actualSolution).setTime(time);
+  }
+
+  public ErrorSet bigDecimalAccurateSPDSolutionErrors() {
+    // printMethodName();
+    checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
+    if (bigDecimalSolution == null) {
+      throw new RuntimeException("bifDecimaSPDSolutionErrors() must be called before bigDecimalAccurateSPDSolutionErrors()");
+    }
+    setTestedMethodName("BigDecimalMatrix.solveSPDAccurately(BigDecimal[])");
+    final BigDecimalMatrix matrix = new BigDecimalMatrix(matrixData, true);
+    time = -System.nanoTime();
+    matrix.solveSPDAccurately(bigDecimalVector);
+    time += System.nanoTime();
+    final BigDecimal[] actualSolution = matrix.getBigDecimalSolution();
+    return findErrors(bigDecimalSolution, actualSolution).setTime(time);
+  }
+
+  // LU-decomposition-based simple matrix solutions
+
+  public ErrorSet doubleMatrixSolutionErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
     setTestedMethodName("DoubleMatrix.solve(double[][])");
@@ -409,6 +450,19 @@ public class MatrixData {
     time = -System.nanoTime();
     final double[][] actualSolution = matrix.solve(matrixB).getDoubleData();
     time += System.nanoTime();
+    return findErrors(this.matrixX, actualSolution).setTime(time);
+  }
+
+  public ErrorSet jamaMatrixSolutionErrors() {
+    // printMethodName();
+    checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
+    setTestedMethodName("Jama Matrix.solve(double[][])");
+    final Jama.Matrix matrixA = new Jama.Matrix(matrixData);
+    final Jama.Matrix matrixB = new Jama.Matrix(this.matrixB);
+    time = -System.nanoTime();
+    final Jama.Matrix matrixX = matrixA.solve(matrixB);
+    time += System.nanoTime();
+    final double[][] actualSolution = matrixX.getArray();
     return findErrors(this.matrixX, actualSolution).setTime(time);
   }
 
@@ -442,7 +496,9 @@ public class MatrixData {
     return findErrors(bigDecimalMatrixX, actualSolution).setTime(time);
   }
 
-  public ErrorSet accurateMatrixSolutionErrors() {
+  // LU-decomposition-based accurate matrix solutions
+
+  public ErrorSet doubleAccurateMatrixSolutionErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
     setTestedMethodName("DoubleMatrix.solveAccurately(double[][])");
@@ -481,7 +537,9 @@ public class MatrixData {
     return findErrors(bigDecimalMatrixX, actualSolution).setTime(time);
   }
 
-  public ErrorSet matrixInversionErrors() {
+  // Matrix inversion
+
+  public ErrorSet doubleMatrixInversionErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.INVERSION);
     setTestedMethodName("DoubleMatrix.inverse()");
@@ -490,6 +548,18 @@ public class MatrixData {
     final Matrix inverse = matrix.inverse();
     time += System.nanoTime();
     final double[][] product = multiply(matrixData, inverse.getDoubleData());
+    return findErrors(unityMatrix, product, 1).setTime(time);
+  }
+
+  public ErrorSet jamaMatrixInversionErrors() {
+    // printMethodName();
+    checkPurpose(performerMethodName(), Purpose.INVERSION);
+    setTestedMethodName("Jama Matrix.inverse()");
+    final Jama.Matrix matrixA = new Jama.Matrix(matrixData);
+    time = -System.nanoTime();
+    final Jama.Matrix inverse = matrixA.inverse();
+    time += System.nanoTime();
+    final double[][] product = multiply(matrixData, inverse.getArray());
     return findErrors(unityMatrix, product, 1).setTime(time);
   }
 
@@ -519,7 +589,9 @@ public class MatrixData {
     return findErrors(bigDecimalUnityMatrix, product).setTime(time);
   }
 
-  public ErrorSet accurateMatrixInversionErrors() {
+  // Accurate matrix inversion
+
+  public ErrorSet doubleAccurateMatrixInversionErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.INVERSION);
     setTestedMethodName("DoubleMatrix.inverseAccurately()");
@@ -560,14 +632,27 @@ public class MatrixData {
     return findErrors(bigDecimalUnityMatrix, product).setTime(time);
   }
 
-  public ErrorSet multiplicationErrors() {
+  // matrix multiplications
+
+  public ErrorSet doubleMultiplicationErrors() {
     checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
     setTestedMethodName("DoubleMatrix.inverse()");
-    final DoubleMatrix matrix = new DoubleMatrix(matrixData, true);
+    final Matrix matrix = new DoubleMatrix(matrixData, true);
     time = -System.nanoTime();
-    final double[][] product = matrix.multiply(matrixX).getDoubleData();
+    final Matrix product = matrix.multiply(matrixX);
     time += System.nanoTime();
-    return findErrors(matrixB, product).setTime(time);
+    return findErrors(matrixB, product.getDoubleData()).setTime(time);
+  }
+
+  public ErrorSet jamaMultiplicationErrors() {
+    checkPurpose(performerMethodName(), Purpose.MATRIX_SOLUTION);
+    setTestedMethodName("Jama Matrix.inverse()");
+    final Jama.Matrix matrixA = new Jama.Matrix(matrixData);
+    final Jama.Matrix matrixX = new Jama.Matrix(this.matrixX);
+    time = -System.nanoTime();
+    final Jama.Matrix matrixB = matrixA.times(matrixX);
+    time += System.nanoTime();
+    return findErrors(this.matrixB, matrixB.getArray()).setTime(time);
   }
 
   public ErrorSet quadrupleMultiplicationErrors() {
@@ -579,10 +664,10 @@ public class MatrixData {
     final Quadruple[][] expectedProduct = multiply(matrix.getQuadrupleData(), quadrupleMatrixX);
 
     time = -System.nanoTime();
-    final Quadruple[][] actualProduct = matrix.multiply(quadrupleMatrixX).getQuadrupleData();
+    final Matrix actualProduct = matrix.multiply(quadrupleMatrixX);
     time += System.nanoTime();
 
-    return findErrors(expectedProduct, actualProduct).setTime(time);
+    return findErrors(expectedProduct, actualProduct.getQuadrupleData()).setTime(time);
   }
 
   public ErrorSet bigDecimalMultiplicationErrors() {
@@ -595,10 +680,10 @@ public class MatrixData {
     final BigDecimal[][] expectedProduct = multiply(matrix.getBigDecimalData(), bigDecimalMatrixX);
 
     time = -System.nanoTime();
-    final BigDecimal[][] actualProduct = matrix.multiply(bigDecimalMatrixX).getBigDecimalData();
+    final Matrix actualProduct = matrix.multiply(bigDecimalMatrixX);
     time += System.nanoTime();
 
-    return findErrors(expectedProduct, actualProduct).setTime(time);
+    return findErrors(expectedProduct, actualProduct.getBigDecimalData()).setTime(time);
   }
 
 
