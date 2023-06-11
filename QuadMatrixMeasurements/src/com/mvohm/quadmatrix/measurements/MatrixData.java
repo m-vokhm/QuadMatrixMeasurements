@@ -317,6 +317,7 @@ public class MatrixData {
     final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
     if (quadrupleSolution == null) {
       quadrupleSolution = makeQuadrupleSolution();
+      quadrupleVector = multiply(matrix.getQuadrupleData(), quadrupleSolution);
     }
     time = -System.nanoTime();
     matrix.solveAccurately(quadrupleVector);
@@ -332,6 +333,7 @@ public class MatrixData {
     final BigDecimalMatrix matrix = new BigDecimalMatrix(matrixData, true);
     if (bigDecimalSolution == null) {
       bigDecimalSolution = makeBigDecimalSolution();
+      bigDecimalVector = multiply(matrix.getBigDecimalData(), bigDecimalSolution );
     }
     time = -System.nanoTime();
     matrix.solveAccurately(bigDecimalVector);
@@ -413,11 +415,12 @@ public class MatrixData {
   public ErrorSet quadrupleAccurateSPDSolutionErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
-    if (quadrupleSolution == null) {
-      quadrupleSolution = makeQuadrupleSolution();
-    }
     setTestedMethodName("QuadrupleMatrix.solveSPDAccurately(Quadruple[])");
     final QuadrupleMatrix matrix = new QuadrupleMatrix(matrixData, true);
+    if (quadrupleSolution == null) {
+      quadrupleSolution = makeQuadrupleSolution();
+      quadrupleVector = multiply(matrix.getQuadrupleData(), quadrupleSolution);
+    }
     time = -System.nanoTime();
     matrix.solveSPDAccurately(quadrupleVector);
     time += System.nanoTime();
@@ -428,11 +431,12 @@ public class MatrixData {
   public ErrorSet bigDecimalAccurateSPDSolutionErrors() {
     // printMethodName();
     checkPurpose(performerMethodName(), Purpose.VECTOR_SOLUTION);
-    if (bigDecimalSolution == null) {
-      bigDecimalSolution = makeBigDecimalSolution();
-    }
     setTestedMethodName("BigDecimalMatrix.solveSPDAccurately(BigDecimal[])");
     final BigDecimalMatrix matrix = new BigDecimalMatrix(matrixData, true);
+    if (bigDecimalSolution == null) {
+      bigDecimalSolution = makeBigDecimalSolution();
+      bigDecimalVector = multiply(matrix.getBigDecimalData(), bigDecimalSolution);
+    }
     time = -System.nanoTime();
     matrix.solveSPDAccurately(bigDecimalVector);
     time += System.nanoTime();
