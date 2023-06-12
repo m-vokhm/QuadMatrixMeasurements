@@ -132,6 +132,7 @@ public class CollectStatistics {
       put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateSPDSolutionErrors);
     }});
     put(Operations.SIMPLE_MATRIX_SOLUTION, new HashMap<>() {{
+      put(MatrixTypes.JAMA,                 MatrixData::jamaMatrixSolutionErrors);
       put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleMatrixSolutionErrors);
       put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleMatrixSolutionErrors);
       put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalMatrixSolutionErrors);
@@ -144,6 +145,7 @@ public class CollectStatistics {
       put(MatrixTypes.BIGDECIMAL_MATRIX_80, MatrixData::bigDecimalAccurateMatrixSolutionErrors);
     }});
     put(Operations.SIMPLE_INVERSION, new HashMap<>() {{
+      put(MatrixTypes.JAMA,                 MatrixData::jamaMatrixInversionErrors);
       put(MatrixTypes.DOUBLE_MATRIX,        MatrixData::doubleMatrixInversionErrors);
       put(MatrixTypes.QUADRUPLE_MATRIX,     MatrixData::quadrupleMatrixInversionErrors);
       put(MatrixTypes.BIGDECIMAL_MATRIX_40, MatrixData::bigDecimalMatrixInversionErrors);
@@ -416,7 +418,7 @@ public class CollectStatistics {
 
     public ErrorSet getStatistics() {
       final double avrMse = accumulatedMse / trialCount;
-      final double avrMaxErr = accumulatedMaxErr / trialCount;
+      final double avrMaxErr = accumulatedMaxErr;
       final double avrMeanErr = accumulatedMeanErr / trialCount;
       final long avrTime = Math.round((double)accumulatedTime / timedTrialCount);
       return new ErrorSet(avrMse, avrMeanErr, avrMaxErr).setTime(avrTime);
