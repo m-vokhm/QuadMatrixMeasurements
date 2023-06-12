@@ -28,13 +28,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 
-import javax.sound.sampled.AudioFormat.Encoding;
-
 import com.mvohm.quadmatrix.BigDecimalMatrix;
 
 public class CollectStatistics {
 
-  static final Random random = new Random();
+  private static final int RAND_SEED = 123;
+  static Random random = new Random(RAND_SEED);
 
   public interface DataGenerator {
     MatrixData generate();
@@ -200,9 +199,6 @@ public class CollectStatistics {
    * @param output
    */
   private void testOperationOnType(Operations operation, MatrixTypes matrixType) {
-    write("Operation: " + operation);
-    write("  Matrix type: " + matrixType);
-
     setBigDecimalMatrixPrecision(matrixType);
 
     final ErrorSet[] results = collectStatsOnSizes(operation, matrixType);
@@ -220,7 +216,7 @@ public class CollectStatistics {
     for (int i = 0; i < sizes.length; i++) {
       results[i] = testOperationOnTypeOfSize(operation, matrixType, sizes[i]);
       if (results[i] == null) {
-        write("  Not implemented");
+        write(operation + " for " + matrixType + " not implemented");
         return null;
       } else {
         showResults(results[i]);
@@ -260,6 +256,8 @@ public class CollectStatistics {
     if (tester == null) {
       return null;
     }
+    say("Operation:     " + operation);
+    say("  Matrix type: " + matrixType);
     say("    Matrix size = %4s", size);
     runTester(tester);
     return tester.getStatistics();
@@ -291,7 +289,7 @@ public class CollectStatistics {
     for (int i = 1; i <= ITERATIONS; i++) {
       tester.perform();
       final long currentTime = System.currentTimeMillis();
-      if (currentTime - lastTime > 1000) {
+      if (currentTime - lastTime > 2000) {  // Show progress every 2 sec
         showProgress(tester, i);
         lastTime = currentTime;
       }

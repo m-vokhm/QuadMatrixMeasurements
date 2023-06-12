@@ -77,7 +77,8 @@ public class MatrixData {
   private String method_1_name = null;
   private String method_2_name = null;
 
-  private static final MathContext MC = new MathContext(BigDecimalMatrix.getDefaultPrecision(), RoundingMode.HALF_EVEN);
+  private final MathContext mc = new MathContext( BigDecimalMatrix.getDefaultPrecision(),
+                                                  RoundingMode.HALF_EVEN);
 
   /* ***************************************************************************
    *********** Creating datasets ***********************************************
@@ -810,13 +811,13 @@ public class MatrixData {
     return result;
   }
 
-  private static BigDecimal[] multiply(BigDecimal[][] matrix, BigDecimal[] vector) {
+  private BigDecimal[] multiply(BigDecimal[][] matrix, BigDecimal[] vector) {
     final int length = matrix.length;
     final BigDecimal[] result = new BigDecimal[length];
     for (int i = 0; i < length; i++) {
       BigDecimal productElement = BigDecimal.ZERO;
       for (int j = 0; j < length; j++) {
-        productElement = productElement.add(matrix[i][j].multiply(vector[j], MC), MC);
+        productElement = productElement.add(matrix[i][j].multiply(vector[j], mc), mc);
       }
       result[i] = productElement;
     }

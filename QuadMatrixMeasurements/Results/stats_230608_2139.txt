@@ -24,9 +24,9 @@ Operation: SIMPLE_VECTOR_SOLUTION
 
 Operation: SIMPLE_VECTOR_SOLUTION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:    	          50	         100	         200	         400
-    Errors:  	   1.893e-42	   9.220e-78	   2.439e-77	   1.906e-41
-    Time, ms:	      57.599	     452.632	    3524.463	   27440.309
+    Size:               50           100           200           400
+    Errors:      1.542e-77     2.295e-78     1.291e-77     2.004e-77
+    Time, ms:       59.135       464.985      3598.770     27833.515
 
 
 Operation: ACCURATE_VECTOR_SOLUTION
@@ -53,9 +53,9 @@ Operation: ACCURATE_VECTOR_SOLUTION
 
 Operation: ACCURATE_VECTOR_SOLUTION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:    	          50	         100	         200	         400
-    Errors:  	   3.331e-80	   4.307e-43	   1.055e-42	   2.501e-40
-    Time, ms:	     108.439	     662.464	    4437.212	   31148.782
+    Size:               50           100           200           400
+    Errors:      5.181e-80     9.033e-79     3.178e-80     5.390e-80
+    Time, ms:      112.198       697.168      4574.717     32501.895
 
 
 Operation: SIMPLE_SPD_SOLUTION
@@ -84,9 +84,9 @@ Operation: SIMPLE_SPD_SOLUTION
 
 Operation: SIMPLE_SPD_SOLUTION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:    	          50	         100	         200	         400
-    Errors:  	   2.090e-78	   8.628e-42	   5.969e-41	   1.725e-39
-    Time, ms:	      29.345	     226.254	    1717.232	   13239.760
+    Size:               50           100           200           400
+    Errors:      2.065e-78     5.511e-78     1.238e-77     2.823e-77
+    Time, ms:       30.513       236.476      1794.694     13771.652
 
 
 Operation: ACCURATE_SPD_SOLUTION
@@ -113,9 +113,9 @@ Operation: ACCURATE_SPD_SOLUTION
 
 Operation: ACCURATE_SPD_SOLUTION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:    	          50	         100	         200	         400
-    Errors:  	   1.002e-41	   8.202e-42	   2.995e-41	   7.360e-40
-    Time, ms:	      73.875	     429.931	    2532.416	   16222.070
+    Size:               50           100           200           400
+    Errors:      3.532e-79     6.112e-79     9.832e-79     1.649e-78
+    Time, ms:       76.639       442.025      2666.781     17057.521
 
 
 Operation: SIMPLE_MATRIX_SOLUTION
