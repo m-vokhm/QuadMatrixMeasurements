@@ -204,7 +204,7 @@ public class CollectStatistics {
     final ErrorSet[] results = collectStatsOnSizes(operation, matrixType);
 
     if (results != null) {
-      writeResults(results);
+      writeResults(results, operation, matrixType);
     }
     write();
   }
@@ -233,7 +233,8 @@ public class CollectStatistics {
     }
   }
 
-  private void writeResults(ErrorSet[] results) {
+  private void writeResults(ErrorSet[] results, Operations operation, MatrixTypes matrixType) {
+    write("Statistics for %s on %s", operation, matrixType);
     write_("    Size:    ");
     for (int i = 0; i < results.length; i++) {
       write_("\t%12s", sizes[i]);
@@ -256,11 +257,15 @@ public class CollectStatistics {
     if (tester == null) {
       return null;
     }
+    showSectionHeader(operation, matrixType, size);
+    runTester(tester);
+    return tester.getStatistics();
+  }
+
+  private static void showSectionHeader(Operations operation, MatrixTypes matrixType, int size) {
     say("Operation:     " + operation);
     say("  Matrix type: " + matrixType);
     say("    Matrix size = %4s", size);
-    runTester(tester);
-    return tester.getStatistics();
   }
 
 

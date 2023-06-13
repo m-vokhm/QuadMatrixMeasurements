@@ -1,0 +1,115 @@
+SIMPLE_VECTOR_SOLUTION for JAMA not implemented
+
+SIMPLE_VECTOR_SOLUTION for DOUBLE_MATRIX not implemented
+
+SIMPLE_VECTOR_SOLUTION for QUADRUPLE_MATRIX not implemented
+
+SIMPLE_VECTOR_SOLUTION for BIGDECIMAL_MATRIX_40 not implemented
+
+SIMPLE_VECTOR_SOLUTION for BIGDECIMAL_MATRIX_80 not implemented
+
+
+ACCURATE_VECTOR_SOLUTION for JAMA not implemented
+
+ACCURATE_VECTOR_SOLUTION for DOUBLE_MATRIX not implemented
+
+ACCURATE_VECTOR_SOLUTION for QUADRUPLE_MATRIX not implemented
+
+ACCURATE_VECTOR_SOLUTION for BIGDECIMAL_MATRIX_40 not implemented
+
+ACCURATE_VECTOR_SOLUTION for BIGDECIMAL_MATRIX_80 not implemented
+
+
+SIMPLE_SPD_SOLUTION for JAMA not implemented
+
+SIMPLE_SPD_SOLUTION for DOUBLE_MATRIX not implemented
+
+SIMPLE_SPD_SOLUTION for QUADRUPLE_MATRIX not implemented
+
+SIMPLE_SPD_SOLUTION for BIGDECIMAL_MATRIX_40 not implemented
+
+SIMPLE_SPD_SOLUTION for BIGDECIMAL_MATRIX_80 not implemented
+
+
+ACCURATE_SPD_SOLUTION for JAMA not implemented
+
+ACCURATE_SPD_SOLUTION for DOUBLE_MATRIX not implemented
+
+ACCURATE_SPD_SOLUTION for QUADRUPLE_MATRIX not implemented
+
+ACCURATE_SPD_SOLUTION for BIGDECIMAL_MATRIX_40 not implemented
+
+ACCURATE_SPD_SOLUTION for BIGDECIMAL_MATRIX_80 not implemented
+
+
+SIMPLE_MATRIX_SOLUTION for JAMA not implemented
+
+SIMPLE_MATRIX_SOLUTION for DOUBLE_MATRIX not implemented
+
+SIMPLE_MATRIX_SOLUTION for QUADRUPLE_MATRIX not implemented
+
+SIMPLE_MATRIX_SOLUTION for BIGDECIMAL_MATRIX_40 not implemented
+
+SIMPLE_MATRIX_SOLUTION for BIGDECIMAL_MATRIX_80 not implemented
+
+
+ACCURATE_MATRIX_SOLUTION for JAMA not implemented
+
+ACCURATE_MATRIX_SOLUTION for DOUBLE_MATRIX not implemented
+
+ACCURATE_MATRIX_SOLUTION for QUADRUPLE_MATRIX not implemented
+
+ACCURATE_MATRIX_SOLUTION for BIGDECIMAL_MATRIX_40 not implemented
+
+ACCURATE_MATRIX_SOLUTION for BIGDECIMAL_MATRIX_80 not implemented
+
+
+SIMPLE_INVERSION for JAMA not implemented
+
+SIMPLE_INVERSION for DOUBLE_MATRIX not implemented
+
+SIMPLE_INVERSION for QUADRUPLE_MATRIX not implemented
+
+SIMPLE_INVERSION for BIGDECIMAL_MATRIX_40 not implemented
+
+SIMPLE_INVERSION for BIGDECIMAL_MATRIX_80 not implemented
+
+
+ACCURATE_INVERSION for JAMA not implemented
+
+Operation:     ACCURATE_INVERSION
+  Matrix type: DOUBLE_MATRIX
+    Size:    	          50	         100	         200	         400
+    Errors:  	   7.892e-16	   6.961e-16	   3.374e-16	   2.803e-16
+    Time, ms:	       6.698	      57.173	     496.964	    4676.480
+
+Operation:     ACCURATE_INVERSION
+  Matrix type: QUADRUPLE_MATRIX
+    Size:    	          50	         100	         200	         400
+    Errors:  	   1.548e-38	   1.431e-38	   2.081e-38	   5.751e-38
+    Time, ms:	     394.162	    3360.998	   30138.190	  272901.810
+
+Operation:     ACCURATE_INVERSION
+  Matrix type: BIGDECIMAL_MATRIX_40
+    Size:    	          50	         100	         200	         400
+    Errors:  	   8.687e-40	   5.371e-40	   8.803e-40	   8.021e-40
+    Time, ms:	    1650.081	   15901.778	  136087.315	 1162496.187
+
+Operation:     ACCURATE_INVERSION
+  Matrix type: BIGDECIMAL_MATRIX_80
+    Size:    	          50	         100	         200	         400
+    Errors:  	   5.119e-80	   7.869e-80	   7.619e-80	   1.808e-79
+    Time, ms:	    2503.963	   22351.503	  171971.371	 1527991.172
+
+
+MULTIPLICATION for JAMA not implemented
+
+MULTIPLICATION for DOUBLE_MATRIX not implemented
+
+MULTIPLICATION for QUADRUPLE_MATRIX not implemented
+
+MULTIPLICATION for BIGDECIMAL_MATRIX_40 not implemented
+
+MULTIPLICATION for BIGDECIMAL_MATRIX_80 not implemented
+
+

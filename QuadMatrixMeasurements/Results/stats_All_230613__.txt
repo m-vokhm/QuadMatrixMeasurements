@@ -24,9 +24,9 @@ Operation: SIMPLE_VECTOR_SOLUTION
 
 Operation: SIMPLE_VECTOR_SOLUTION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:               50           100           200           400
-    Errors:      1.542e-77     2.295e-78     1.291e-77     2.004e-77
-    Time, ms:       59.135       464.985      3598.770     27833.515
+    Size:    	          50	         100	         200	         400
+    Errors:  	   1.542e-77	   2.295e-78	   1.291e-77	   2.004e-77
+    Time, ms:	      59.135	     464.985	    3598.770	   27833.515
 
 
 Operation: ACCURATE_VECTOR_SOLUTION
@@ -53,9 +53,9 @@ Operation: ACCURATE_VECTOR_SOLUTION
 
 Operation: ACCURATE_VECTOR_SOLUTION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:               50           100           200           400
-    Errors:      5.181e-80     9.033e-79     3.178e-80     5.390e-80
-    Time, ms:      112.198       697.168      4574.717     32501.895
+    Size:    	          50	         100	         200	         400
+    Errors:  	   5.181e-80	   9.033e-79	   3.178e-80	   5.390e-80
+    Time, ms:	     112.198	     697.168	    4574.717	   32501.895
 
 
 Operation: SIMPLE_SPD_SOLUTION
@@ -84,9 +84,9 @@ Operation: SIMPLE_SPD_SOLUTION
 
 Operation: SIMPLE_SPD_SOLUTION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:               50           100           200           400
-    Errors:      2.065e-78     5.511e-78     1.238e-77     2.823e-77
-    Time, ms:       30.513       236.476      1794.694     13771.652
+    Size:    	          50	         100	         200	         400
+    Errors:  	   2.065e-78	   5.511e-78	   1.238e-77	   2.823e-77
+    Time, ms:	      30.513	     236.476	    1794.694	   13771.652
 
 
 Operation: ACCURATE_SPD_SOLUTION
@@ -113,16 +113,16 @@ Operation: ACCURATE_SPD_SOLUTION
 
 Operation: ACCURATE_SPD_SOLUTION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:               50           100           200           400
-    Errors:      3.532e-79     6.112e-79     9.832e-79     1.649e-78
-    Time, ms:       76.639       442.025      2666.781     17057.521
+    Size:    	          50	         100	         200	         400
+    Errors:  	   3.532e-79	   6.112e-79	   9.832e-79	   1.649e-78
+    Time, ms:	      76.639	     442.025	    2666.781	   17057.521
 
 
 Operation: SIMPLE_MATRIX_SOLUTION
   Matrix type: JAMA
-    Size:               50           100           200           400
-    Errors:      4.267e-15     1.375e-14     3.536e-14     9.077e-14
-    Time, ms:        0.157         1.081         8.441        66.720
+    Size:     	        50	         100	         200	         400
+    Errors:   	 4.267e-15	   1.375e-14	   3.536e-14	   9.077e-14
+    Time, ms: 	     0.157	       1.081	       8.441	      66.720
 
 Operation: SIMPLE_MATRIX_SOLUTION
   Matrix type: DOUBLE_MATRIX
@@ -180,9 +180,9 @@ Operation: ACCURATE_MATRIX_SOLUTION
 
 Operation: SIMPLE_INVERSION
   Matrix type: JAMA
-    Size:               50           100           200           400
-    Errors:      7.219e-15     5.815e-15     4.954e-14     4.379e-14
-    Time, ms:        0.165         1.085         8.544        66.992
+    Size:    	          50	         100	         200	         400
+    Errors:  	   7.219e-15	   5.815e-15	   4.954e-14	   4.379e-14
+    Time, ms:	       0.165	       1.085	       8.544	      66.992
 
 Operation: SIMPLE_INVERSION
   Matrix type: DOUBLE_MATRIX
@@ -213,59 +213,59 @@ Operation: ACCURATE_INVERSION
   Matrix type: JAMA
   Not implemented
 
-Operation: ACCURATE_INVERSION
+Operation:     ACCURATE_INVERSION
   Matrix type: DOUBLE_MATRIX
-    Size:               50           100           200           400
-    Errors:      9.613e-16     3.713e-16     3.356e-16     3.418e-16
-    Time, ms:        6.694        57.187       527.244      4808.941
+    Size:    	          50	         100	         200	         400
+    Errors:  	   7.892e-16	   6.961e-16	   3.374e-16	   2.803e-16
+    Time, ms:	       6.698	      57.173	     496.964	    4676.480
 
-Operation: ACCURATE_INVERSION
+Operation:     ACCURATE_INVERSION
   Matrix type: QUADRUPLE_MATRIX
-    Size:               50           100           200           400
-    Errors:      1.362e-38     1.199e-38     1.812e-38     5.516e-38
-    Time, ms:      387.654      3118.774     33192.593    241294.192
+    Size:    	          50	         100	         200	         400
+    Errors:  	   1.548e-38	   1.431e-38	   2.081e-38	   5.751e-38
+    Time, ms:	     394.162	    3360.998	   30138.190	  272901.810
 
-Operation: ACCURATE_INVERSION
+Operation:     ACCURATE_INVERSION
   Matrix type: BIGDECIMAL_MATRIX_40
-    Size:               50           100           200           400
-    Errors:      1.553e-39     8.229e-40     7.258e-40     1.029e-39
-    Time, ms:     1746.431     15773.776    141314.137   1153489.446
+    Size:    	          50	         100	         200	         400
+    Errors:  	   8.687e-40	   5.371e-40	   8.803e-40	   8.021e-40
+    Time, ms:	    1650.081	   15901.778	  136087.315	 1162496.187
 
-Operation: ACCURATE_INVERSION
+Operation:     ACCURATE_INVERSION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:               50           100           200           400
-    Errors:      6.752e-79     5.540e-80     1.893e-79     6.247e-80
-    Time, ms:     2364.973     21985.579    187339.264   1510393.032
+    Size:    	          50	         100	         200	         400
+    Errors:  	   5.119e-80	   7.869e-80	   7.619e-80	   1.808e-79
+    Time, ms:	    2503.963	   22351.503	  171971.371	 1527991.172
 
 
 Operation: MULTIPLICATION
   Matrix type: JAMA
-    Size:               50           100           200           400
-    Errors:      2.200e-18     1.741e-18     1.453e-18     1.246e-18
-    Time, ms:        0.094         0.819         7.368        61.653
+    Size:    	          50	         100	         200	         400
+    Errors:  	   2.200e-18	   1.741e-18	   1.453e-18	   1.246e-18
+    Time, ms:	       0.094	       0.819	       7.368	      61.653
 
 Operation: MULTIPLICATION
   Matrix type: DOUBLE_MATRIX
-    Size:               50           100           200           400
-    Errors:      7.627e-19     4.410e-19     2.669e-19     1.587e-19
-    Time, ms:        0.589         4.883        42.052       370.550
+    Size:    	          50	         100	         200	         400
+    Errors:  	   7.627e-19	   4.410e-19	   2.669e-19	   1.587e-19
+    Time, ms:	       0.589	       4.883	      42.052	     370.550
 
 Operation: MULTIPLICATION
   Matrix type: QUADRUPLE_MATRIX
-    Size:               50           100           200           400
-    Errors:      0.000e+00     0.000e+00     0.000e+00     0.000e+00
-    Time, ms:       17.876       146.221      1366.664     12819.641
+    Size:    	          50	         100	         200	         400
+    Errors:  	   0.000e+00	   0.000e+00	   0.000e+00	   0.000e+00
+    Time, ms:	      17.876	     146.221	    1366.664	   12819.641
 
 Operation: MULTIPLICATION
   Matrix type: BIGDECIMAL_MATRIX_40
-    Size:               50           100           200           400
-    Errors:      1.026e-41     9.239e-42     8.607e-42     7.941e-42
-    Time, ms:      108.273       927.498      7435.614     60059.121
+    Size:    	          50	         100	         200	         400
+    Errors:  	   1.026e-41	   9.239e-42	   8.607e-42	   7.941e-42
+    Time, ms:	     108.273	     927.498	    7435.614	   60059.121
 
 Operation: MULTIPLICATION
   Matrix type: BIGDECIMAL_MATRIX_80
-    Size:               50           100           200           400
-    Errors:      1.016e-81     9.375e-82     8.388e-82     7.884e-82
-    Time, ms:      119.907      1018.276      8077.928     65332.486
+    Size:    	          50	         100	         200	         400
+    Errors:  	   1.016e-81	   9.375e-82	   8.388e-82	   7.884e-82
+    Time, ms:	     119.907	    1018.276	    8077.928	   65332.486
 
 
