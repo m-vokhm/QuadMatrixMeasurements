@@ -3,8 +3,11 @@
   <groupId>com.mvohm.quadmatrix.measurements</groupId>
   <artifactId>QuadMatrixMeasurements</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  
   <build>
+  
     <sourceDirectory>src</sourceDirectory>
+    
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -13,7 +16,40 @@
           <release>17</release>
         </configuration>
       </plugin>
+      
+        
+      <plugin>
+        <!-- Build an executable JAR -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>com.mvohm.quadmatrix.measurements.CollectStatistics</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>com.mvohm.quadmatrix.measurements.CollectStatistics</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>      
+      
     </plugins>
+          
   </build>
   
   <dependencies>
