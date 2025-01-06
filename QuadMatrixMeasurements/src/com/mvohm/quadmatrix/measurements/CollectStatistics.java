@@ -1,6 +1,6 @@
 /*
 
- Copyright 2021-2023 M.Vokhmentsev
+ Copyright 2021-2025 M.Vokhmentsev
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -20,8 +20,11 @@ package com.mvohm.quadmatrix.measurements;
 
 import static com.mvohm.quadmatrix.measurements.AuxMethods.*;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,39 +33,58 @@ import java.util.Random;
 
 import com.mvohm.quadmatrix.BigDecimalMatrix;
 
+/**
+ * Estimates accuracy and execution times of the most common operations 
+ * performed on matrices of different types. 
+ * The matrices being tested are BigDecimalMatrix, DoubleMatrix, and QuadrupleMatrix 
+ * from project QuadMartix (https://github.com/m-vokhm/QuadMatrix),
+ * and JAMA from https://math.nist.gov/javanumerics/jama/ (used as reference library). 
+ * 
+ * Complete execution may take up to 48 hours or even more,
+ * depending on the machine performance.   
+ */
+
 public class CollectStatistics {
 
   private static final int RAND_SEED = 123;
   static Random random = new Random(RAND_SEED);
 
+  /** An object of a class implementing this interface is encapsulated in an OperationTester object 
+   * and is responsible for generating a data sample of a certain size to test an operation of a certain type. */
   public interface DataGenerator {
     MatrixData generate();
   }
 
+  /** An object of a class implementing this interface is encapsulated in an OperationTester object 
+   * and is responsible for executing the method under test and collecting statistics 
+   * on the performance and accuracy of the method under test */
   public interface OperationPerformer {
     ErrorSet perform(MatrixData matrixData);
   }
 
+  /** Types of operations performed on matrices. */
   enum Operations {
-    SIMPLE_VECTOR_SOLUTION,
-    ACCURATE_VECTOR_SOLUTION,
-    SIMPLE_SPD_SOLUTION,
-    ACCURATE_SPD_SOLUTION,
-    SIMPLE_MATRIX_SOLUTION,
-    ACCURATE_MATRIX_SOLUTION,
+    SIMPLE_VECTOR_SOLUTION,       // Solves A * x = b, where x and b are vectors
+    ACCURATE_VECTOR_SOLUTION,     // with iterative refinement
+    SIMPLE_SPD_SOLUTION,          // solve symmetric  positive-definite matrix using Cholesky decomposition 
+    ACCURATE_SPD_SOLUTION,        // with iterative refinement
+    SIMPLE_MATRIX_SOLUTION,       // Solves A * X = B, where X and B are matrices
+    ACCURATE_MATRIX_SOLUTION,     // with iterative refinement  
     SIMPLE_INVERSION,
-    ACCURATE_INVERSION,
+    ACCURATE_INVERSION,           // with iterative refinement
     MULTIPLICATION,
   };
 
+  /** Types of matrices being tested */
   enum MatrixTypes {
     JAMA,
-    DOUBLE_MATRIX,
-    QUADRUPLE_MATRIX,
-    BIGDECIMAL_MATRIX_40,
-    BIGDECIMAL_MATRIX_80,
+    DOUBLE_MATRIX,                // com.mvohm.quadmatrix.DoubleMatrix                                
+    QUADRUPLE_MATRIX,             // com.mvohm.quadmatrix.QuadrupleMatrix
+    BIGDECIMAL_MATRIX_40,         // com.mvohm.quadmatrix.BigDecimalMatrix with the matrix precision set to 40 decimal digits 
+    BIGDECIMAL_MATRIX_80,         // com.mvohm.quadmatrix.BigDecimalMatrix with the matrix precision set to 80 decimal digits
   };
 
+  /** Sizes of matrices to test */
   int [] sizes = new int[] {
      50,
     100,
@@ -70,11 +92,11 @@ public class CollectStatistics {
     400,
   };
 
-  static final long WARMUP_TIME =   3_000; // Start timing after warmup of 3 seconds after the start of the execution
-  static final int WARMUP_COUNT =   1_000; // Start timing after warmup of 1000 test iterations, if they take less than 3 a
-  static final int ITERATIONS =   100_000; // For fast methods, do max 100,000 iterations
-  static final int MIN_ITERATIONS =    20; // Do at least 20 iterations
-  static final long MAXTIME_MS =   30_000; // max 20 seconds per every type + operation;
+  static final long WARMUP_TIME =     3_000; // Start timing after warmup of 3 seconds after the start of the execution
+  static final int WARMUP_COUNT =     1_000; // Start timing after warmup of 1000 test iterations, if they take less than WARMUP_TIME 
+  static final int MAX_ITERATIONS = 100_000; // For fast methods, do max 100,000 iterations
+  static final int MIN_ITERATIONS =      20; // Do at least 20 iterations
+  static final long MAXTIME_MS =     30_000; // max 30 seconds per every type + operation;
 
   interface TesterMaker {
     OperationTester make(int size);
@@ -85,7 +107,8 @@ public class CollectStatistics {
   }
 
   /**
-   * For each operation type, stores the corresponding method for data generation
+   * For each operation type and size, stores the corresponding method for dataset generation.
+   * Remove the types of operations you do not want to perform.
    */
   HashMap<Operations, GeneratorMaker> generatorMakers = new HashMap<>()
   {{
@@ -101,7 +124,9 @@ public class CollectStatistics {
   }};
 
   /**
-   * For each operation type and matrix type, stores the corresponding method performing the operation to be tested
+   * For each operation type and matrix type, stores the corresponding method that 
+   * performs the operation and collects statistics regarding execution time and errors.
+   * Remove the types of operations and matrices you do not want to test.
    */
   HashMap<Operations, HashMap<MatrixTypes, OperationPerformer>> performers = new HashMap<>() {{
     put(Operations.SIMPLE_VECTOR_SOLUTION, new HashMap<>() {{
@@ -167,11 +192,12 @@ public class CollectStatistics {
 
   private PrintStream output = null;
 
-  public static void main(String[] args) throws FileNotFoundException {
+  public static void main(String[] args) throws IOException {
     new CollectStatistics().run();
   }
 
-  private void run() throws FileNotFoundException {
+  /** Traverses through operation types, matrix types and sizes, */ 
+  private void run() throws IOException {
     Locale.setDefault(Locale.US);
     output = openOutput();
     for (final Operations operation: Operations.values()) {
@@ -209,10 +235,21 @@ public class CollectStatistics {
     write();
   }
 
+  private static void setBigDecimalMatrixPrecision(MatrixTypes matrixType) {
+    if (matrixType == MatrixTypes.BIGDECIMAL_MATRIX_40) {
+      BigDecimalMatrix.setDefaultPrecision(40);
+    } else if (matrixType == MatrixTypes.BIGDECIMAL_MATRIX_80) {
+      BigDecimalMatrix.setDefaultPrecision(80);
+    }
+  }
+
+  /**
+   * Collect statistics in respect of errors and times for different sizes 
+   * of matrices of the specified type, performing the specified type of operation 
+   */
   private ErrorSet[] collectStatsOnSizes(Operations operation, MatrixTypes matrixType) {
     final ErrorSet[] results = new ErrorSet[sizes.length];
 
-    // Collect errors and times for different sizes
     for (int i = 0; i < sizes.length; i++) {
       results[i] = testOperationOnTypeOfSize(operation, matrixType, sizes[i]);
       if (results[i] == null) {
@@ -225,33 +262,9 @@ public class CollectStatistics {
     return results;
   }
 
-  private static void setBigDecimalMatrixPrecision(MatrixTypes matrixType) {
-    if (matrixType == MatrixTypes.BIGDECIMAL_MATRIX_40) {
-      BigDecimalMatrix.setDefaultPrecision(40);
-    } else if (matrixType == MatrixTypes.BIGDECIMAL_MATRIX_80) {
-      BigDecimalMatrix.setDefaultPrecision(80);
-    }
-  }
-
-  private void writeResults(ErrorSet[] results, Operations operation, MatrixTypes matrixType) {
-    write("Statistics for %s on %s", operation, matrixType);
-    write_("    Size:    ");
-    for (int i = 0; i < results.length; i++) {
-      write_("\t%12s", sizes[i]);
-    }
-    write();
-    write_("    Errors:  ");
-    for (int i = 0; i < results.length; i++) {
-      write_("\t%12.3e", results[i].mse());
-    }
-    write();
-    write_("    Time, ms:");
-    for (int i = 0; i < results.length; i++) {
-      write_("\t%12.3f", results[i].getTime() * 1e-6);
-    }
-    write();
-  }
-
+  /** Creates a tester object for the given combination of the operation type, matrix type, and size,
+   * and runs it.
+   */
   private ErrorSet testOperationOnTypeOfSize(Operations operation, MatrixTypes matrixType, int size) {
     final OperationTester tester = makeTester(operation, matrixType, size);
     if (tester == null) {
@@ -269,12 +282,6 @@ public class CollectStatistics {
   }
 
 
-  TesterMaker petMaker =
-      size -> new OperationTester (
-                () -> MatrixData.makeDataSetForVectorSolutions(size, random),
-                MatrixData::quadrupleLuSolutionWithScalingErrors);
-
-
   private OperationTester makeTester(Operations operation, MatrixTypes matrixType, int size) {
     final GeneratorMaker generatorMaker = generatorMakers.get(operation);
     final HashMap<MatrixTypes, OperationPerformer> performerTable = performers .get(operation);
@@ -290,8 +297,10 @@ public class CollectStatistics {
     resetTime();
     long lastTime = 0;
 
-    // run it ITERATIONS times or MAXTIME milliseconds, which comes first
-    for (int i = 1; i <= ITERATIONS; i++) {
+    // run it not more than ITERATIONS times 
+    // and not longer than MAXTIME_MS milliseconds,
+    // but not less than MIN_ITERATIONS times 
+    for (int i = 1; i <= MAX_ITERATIONS; i++) {
       tester.perform();
       final long currentTime = System.currentTimeMillis();
       if (currentTime - lastTime > 2000) {  // Show progress every 2 sec
@@ -314,19 +323,43 @@ public class CollectStatistics {
         result.maxError(), result.mse(), result.getTime() * 1e-6);
   }
 
+  private void writeResults(ErrorSet[] results, Operations operation, MatrixTypes matrixType) {
+    write("Statistics for %s on %s", operation, matrixType);
+    write_("    Size:    ");
+    for (int i = 0; i < results.length; i++) {
+      write_("\t%12s", sizes[i]);
+    }
+    write();
+    write_("    Errors:  ");
+    for (int i = 0; i < results.length; i++) {
+      write_("\t%12.3e", results[i].mse());
+    }
+    write();
+    write_("    Time, ms:");
+    for (int i = 0; i < results.length; i++) {
+      write_("\t%12.3f", results[i].getTime() * 1e-6);
+    }
+    write();
+  }
+
   private long testStartTime;
 
   private void resetTime() {
     testStartTime = System.currentTimeMillis();
   }
 
-  /** Return amount of time passed since the beginning of the current test, in milliseconds */
+  /** Returns the amount of time passed since the beginning of the current test, in milliseconds */
   private long elapsedTime() {
     return System.currentTimeMillis() - testStartTime;
   }
 
-  private static PrintStream openOutput() throws FileNotFoundException {
+  private static PrintStream openOutput() throws IOException {
     final String dataPath = System.getProperty("user.dir") + "\\Results\\";
+    // Bug fix 2024-12-30 18:53:43: Create the folder if it does not exist
+    final Path path = Paths.get(dataPath, new String[] {});
+    if (!Files.exists(path)) {
+      Files.createDirectory(path);
+    }
     final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMdd_HHmm");
     final Date now = new Date();
     final String dateStr = dateFormat.format(now);
@@ -371,21 +404,34 @@ public class CollectStatistics {
     say();
   }
 
+  /* ***************************************************************************
+   ***** OperationTester *******************************************************
+   *****************************************************************************/
+  
+  /**
+   * An instance of this class encapsulates objects for generating test data 
+   * and performing the method under test on that data, 
+   * an object of type MatrixData that stores the test data, 
+   * and an object of type ErrorSet that keeps the results of the most recent 
+   * performed operation (execution time and error values) 
+   * 
+   * Method perform() generates a new random data set and performs the tested operation that data set.    
+   */
   private class OperationTester  {
 
-    DataGenerator generator;
-    OperationPerformer performer;
+    private DataGenerator generator;
+    private OperationPerformer performer;
 
-    MatrixData matrixData;
-    ErrorSet errorSet;
+    private MatrixData matrixData;
+    private ErrorSet errorSet;
 
-    int trialCount;
-    int timedTrialCount;
+    private int trialCount;
+    private int timedTrialCount;
 
-    double accumulatedMse;
-    double accumulatedMeanErr;
-    double accumulatedMaxErr;
-    long accumulatedTime;
+    private double accumulatedMse;
+    private double accumulatedMeanErr;
+    private double accumulatedMaxErr;
+    private long accumulatedTime;
 
     public OperationTester(DataGenerator generator, OperationPerformer performer) {
       this.generator = generator;
@@ -427,6 +473,6 @@ public class CollectStatistics {
       return new ErrorSet(avrMse, avrMeanErr, avrMaxErr).setTime(avrTime);
     }
 
-  }
+  } // private class OperationTester
 
 }
